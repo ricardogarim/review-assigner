@@ -16,14 +16,14 @@ Each changed file matches at most one CODEOWNERS line; the last match wins, as o
 
 ## Draw
 
-For each slot, candidates are the members of its teams, minus the PR author, deactivated Rocket.Chat users and the **Not available** list.
+For each slot, candidates are the members of its teams, minus the PR author, deactivated Rocket.Chat users and the **Out of office** list.
 
 - **Balanced** (default) sorts candidates by: fewest open reviews, then whoever covers more of the remaining slots, then not among the last 5 picked for that team, then random.
-- **Pure random** picks any candidate.
+- **Random** picks any candidate.
 
 Open reviews = tracked open PRs where the person is a reviewer and has not approved. They drop when the person approves or the PR closes, so there is no counter to reset.
 
-With **One person can cover several teams** on, a person who fills one slot also fills every other slot they can. Off, each team gets its own person, and one person covers two teams only when nobody else can.
+With **One reviewer can cover several teams** on, a person who fills one slot also fills every other slot they can. Off, each team gets its own person, and one person covers two teams only when nobody else can.
 
 ## Card
 
@@ -51,7 +51,7 @@ App persistence, by exact association:
 | Open PRs   | `pr-open`                  | the same records, while open             |
 | Last picks | `team:<slug>`              | the last 5 logins picked for a team      |
 
-User links, the Not available list and the draw options live in the app settings.
+User links, the Out of office list and the draw options live in the app settings.
 
 ## Limits
 
