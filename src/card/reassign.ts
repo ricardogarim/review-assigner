@@ -141,7 +141,7 @@ export async function submitReassign(
 				reviewers: record.reviewers.filter((_, i) => i !== target.index),
 				unfilledSlots: [...record.unfilledSlots, ...target.slots],
 			},
-			`@${user.username} removed ${nameOf(old)}${teams}.`,
+			`@${user.username} removed ${nameOf(old)}${teams}`,
 		);
 		return undefined;
 	}
@@ -156,7 +156,7 @@ export async function submitReassign(
 	const label = target.slots.length ? target.slots.map(slotLabel).join(', ') : 'a review';
 	await save(
 		replace(record, target, next),
-		`@${user.username} reassigned ${label} from ${old ? nameOf(old) : 'nobody'} to ${next.reviewers.map(nameOf).join(', ')}.`,
+		`@${user.username} reassigned ${label} from ${old ? nameOf(old) : 'nobody'} to ${next.reviewers.map(nameOf).join(', ')}`,
 	);
 	return undefined;
 }

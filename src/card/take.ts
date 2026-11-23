@@ -54,6 +54,6 @@ export async function take(ctx: CardContext, record: PrRecord, user: IUser): Pro
 	const from = replaced.length ? ` (from ${replaced.map(nameOf).join(', ')})` : '';
 	return save(
 		{ ...record, reviewers: [...reviewers, me], unfilledSlots: record.unfilledSlots.filter((slot) => !mine(slot)) },
-		`@${user.username} took ${taken.map(slotLabel).join(', ')}${from}.`,
+		`@${user.username} took ${taken.map(slotLabel).join(', ')}${from}`,
 	);
 }
