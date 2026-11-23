@@ -3,7 +3,15 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
 
 export const SETTINGS: ISetting[] = [
-	{ id: 'github_token', type: SettingType.PASSWORD, packageValue: '', required: true, public: false, i18nLabel: 'setting_github_token' },
+	{
+		id: 'github_token',
+		type: SettingType.PASSWORD,
+		packageValue: '',
+		required: true,
+		public: false,
+		i18nLabel: 'setting_github_token',
+		i18nDescription: 'setting_github_token_description',
+	},
 	{
 		id: 'repositories',
 		type: SettingType.STRING,
@@ -12,9 +20,26 @@ export const SETTINGS: ISetting[] = [
 		required: true,
 		public: false,
 		i18nLabel: 'setting_repositories',
+		i18nDescription: 'setting_repositories_description',
 	},
-	{ id: 'target_room', type: SettingType.ROOM_PICK, packageValue: '', required: true, public: false, i18nLabel: 'setting_target_room' },
-	{ id: 'webhook_token', type: SettingType.PASSWORD, packageValue: '', required: false, public: false, i18nLabel: 'setting_webhook_token' },
+	{
+		id: 'target_room',
+		type: SettingType.ROOM_PICK,
+		packageValue: '',
+		required: true,
+		public: false,
+		i18nLabel: 'setting_target_room',
+		i18nDescription: 'setting_target_room_description',
+	},
+	{
+		id: 'webhook_token',
+		type: SettingType.PASSWORD,
+		packageValue: '',
+		required: false,
+		public: false,
+		i18nLabel: 'setting_webhook_token',
+		i18nDescription: 'setting_webhook_token_description',
+	},
 	{
 		id: 'webhook_active',
 		type: SettingType.BOOLEAN,
@@ -22,6 +47,7 @@ export const SETTINGS: ISetting[] = [
 		required: false,
 		public: false,
 		i18nLabel: 'setting_webhook_active',
+		i18nDescription: 'setting_webhook_active_description',
 	},
 	{
 		id: 'not_available',
