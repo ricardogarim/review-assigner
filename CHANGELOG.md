@@ -1,5 +1,12 @@
 # review-assigner
 
+## 0.1.1
+
+### Patch Changes
+
+- 9830a46: Clearer setting names and a description for every setting
+- 637459b: Mentions at the end of a message no longer get a dot that breaks them
+
 ## 0.1.0
 
 ### Minor Changes
