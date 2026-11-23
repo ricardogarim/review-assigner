@@ -21,12 +21,12 @@ const withTeams = (reviewer: Reviewer): string => `${nameOf(reviewer)}${reviewer
 function confirmation({ reviewers, unfilled }: Drawn): string {
 	const unlinked = reviewers.filter((r) => !r.rcUsername);
 	return [
-		`Requested: ${reviewers.map(withTeams).join(', ')}.`,
-		unlinked.length ? `Not linked: ${unlinked.map(nameOf).join(', ')}.` : '',
-		unfilled.length ? `No reviewer for: ${unfilled.map(slotLabel).join(', ')}.` : '',
+		`Requested: ${reviewers.map(withTeams).join(', ')}`,
+		unlinked.length ? `Not linked: ${unlinked.map(nameOf).join(', ')}` : '',
+		unfilled.length ? `No reviewer for: ${unfilled.map(slotLabel).join(', ')}` : '',
 	]
 		.filter(Boolean)
-		.join(' ');
+		.join('\n');
 }
 
 export class ReviewCommand implements ISlashCommand {
@@ -95,7 +95,7 @@ export class ReviewCommand implements ISlashCommand {
 				if (!added.length) {
 					return await say(`${refText} already has a card.`);
 				}
-				await replyInThread(record, `@${sender.username} added ${added.map(nameOf).join(', ')}.`, modify, read);
+				await replyInThread(record, `@${sender.username} added ${added.map(nameOf).join(', ')}`, modify, read);
 				return await say(`Added ${added.map(nameOf).join(', ')} to ${refText}.`);
 			}
 

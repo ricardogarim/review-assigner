@@ -68,6 +68,7 @@ test('Reassign to a picked user reads the username users_select submits', async 
 	const env = await setup();
 	await onViewSubmit(env.app, submit('req', 'r0', 'bob'), env.read, env.http, env.persis, env.modify);
 	assert.equal((await env.store.getPr('RocketChat/Rocket.Chat', 1))?.reviewers[0].rcUsername, 'bob');
+	assert.equal(env.thread[0], '@req reassigned architecture/backend from @alice to @bob');
 });
 
 test('Reassign submitted by someone not allowed changes nothing', async () => {
@@ -92,7 +93,7 @@ test('Take it matches any team of the original slot and names the person replace
 		reviewers.map((r) => r.rcUsername),
 		['arch'],
 	);
-	assert.equal(env.thread[0], '@arch took architecture/backend (from @alice).');
+	assert.equal(env.thread[0], '@arch took architecture/backend (from @alice)');
 });
 
 test('Reassign with no user draws again over every slot the old reviewer covered', async () => {
@@ -130,7 +131,7 @@ test('Take it covers every row whose team you are in', async () => {
 		updated?.reviewers.map((r) => [r.rcUsername, r.teams]),
 		[['arch', ['backend', 'frontend']]],
 	);
-	assert.equal(env.thread[0], '@arch took backend, frontend (from @alice, @bob).');
+	assert.equal(env.thread[0], '@arch took backend, frontend (from @alice, @bob)');
 });
 
 test('Take it leaves the old reviewer the rows you cannot cover', async () => {
@@ -145,7 +146,7 @@ test('Take it leaves the old reviewer the rows you cannot cover', async () => {
 			['arch', ['/apps/meteor/client/'], ['frontend']],
 		],
 	);
-	assert.equal(env.thread[0], '@arch took frontend (from @alice).');
+	assert.equal(env.thread[0], '@arch took frontend (from @alice)');
 });
 
 test('Take it fills a row that had no reviewer', async () => {
@@ -158,7 +159,7 @@ test('Take it fills a row that had no reviewer', async () => {
 		updated?.reviewers.map((r) => r.rcUsername),
 		['alice', 'arch'],
 	);
-	assert.equal(env.thread[0], '@arch took frontend.');
+	assert.equal(env.thread[0], '@arch took frontend');
 });
 
 test('a draw skips people whose Rocket.Chat user is deactivated', async () => {
@@ -181,7 +182,7 @@ test('Reassign can remove a reviewer, which leaves their teams without one', asy
 	const updated = await env.store.getPr('RocketChat/Rocket.Chat', 1);
 	assert.deepEqual(updated?.reviewers, []);
 	assert.deepEqual(updated?.unfilledSlots, [both]);
-	assert.equal(env.thread[0], '@req removed @alice (architecture/backend).');
+	assert.equal(env.thread[0], '@req removed @alice (architecture/backend)');
 });
 
 test('the Reassign modal offers replace and remove', async () => {
