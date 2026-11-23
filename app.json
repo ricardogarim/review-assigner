@@ -1,0 +1,49 @@
+{
+	"id": "79a6aec5-9fcd-4c1f-8892-8a74ada7656b",
+	"version": "0.0.0",
+	"requiredApiVersion": "^1.58.0",
+	"iconFile": "icon.png",
+	"author": {
+		"name": "ricardogarim",
+		"homepage": "https://github.com/ricardogarim/review-assigner",
+		"support": "https://github.com/ricardogarim/review-assigner/issues"
+	},
+	"name": "Review Assigner",
+	"nameSlug": "review-assigner",
+	"classFile": "ReviewAssignerApp.ts",
+	"description": "<p>Picks code reviewers from CODEOWNERS and keeps one card per pull request up to date in your review room. In each CODEOWNERS team the PR touches, it picks the person with the fewest open reviews.</p><h4>How to use</h4><ul><li><code>/review 1234</code>, <code>/review repo#123</code> or a PR URL: picks the reviewers and posts the card.</li><li><code>/review 1234 @user</code>: names the reviewers yourself. No draw.</li><li>On the card, <strong>Take it</strong> makes you the reviewer for your teams. <strong>Reassign</strong> swaps or removes a reviewer, or draws again.</li><li>The card follows GitHub: approved, changes requested, commented, then merged or closed.</li></ul><h4>Setup</h4><ul><li><strong>GitHub token:</strong> read-only, with <code>read:org</code> to list team members (and repo read access for private repositories).</li><li><strong>Room for the cards</strong> and <strong>Repositories</strong> (one <code>owner/repo</code> per line, the first is the default).</li><li><strong>User links</strong>: one <code>rocketchat-username github-login</code> pair per line. Linked people are mentioned on cards; others show as their GitHub login.</li><li><strong>Draw strategy</strong>: <em>Balanced</em> (default: fewest open reviews first, then whoever covers more teams, then not recently picked) or <em>Pure random</em>.</li><li><strong>Not available</strong>: GitHub logins to leave out of draws, optionally with <code>until YYYY-MM-DD</code> (PTO, OOO, or people who should never be drawn).</li><li><strong>One person can cover several teams</strong>: on by default, so someone in several of the PR's teams covers them all. Turn it off to give each team its own reviewer.</li><li><strong>Webhook</strong> (optional): add a GitHub webhook to <code>https://&lt;workspace&gt;/api/apps/public/79a6aec5-9fcd-4c1f-8892-8a74ada7656b/github?token=&lt;Webhook URL token&gt;</code>, content type JSON, events <em>Pull requests</em> and <em>Pull request reviews</em>, then turn on <strong>Webhook active</strong>. Without it, the app checks GitHub every 5 minutes.</li></ul>",
+	"implements": [],
+	"permissions": [
+		{
+			"name": "persistence"
+		},
+		{
+			"name": "slashcommand"
+		},
+		{
+			"name": "api"
+		},
+		{
+			"name": "scheduler"
+		},
+		{
+			"name": "networking",
+			"domains": ["api.github.com"]
+		},
+		{
+			"name": "message.read"
+		},
+		{
+			"name": "message.write"
+		},
+		{
+			"name": "room.read"
+		},
+		{
+			"name": "user.read"
+		},
+		{
+			"name": "ui.interact"
+		}
+	]
+}

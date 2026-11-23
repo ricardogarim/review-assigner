@@ -1,0 +1,41 @@
+{
+	"name": "review-assigner",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Rocket.Chat App that picks code reviewers from CODEOWNERS and load",
+	"scripts": {
+		"test": "node --test --experimental-test-isolation=none --require tsx 'src/**/*.test.ts'",
+		"typecheck": "tsc --noEmit",
+		"lint": "oxlint",
+		"lint:fix": "oxlint --fix",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run package",
+		"package": "rm -rf .build && mkdir .build && cp -R app.json icon.png i18n ReviewAssignerApp.ts src package.json tsconfig.json .build/ && rm .build/src/core/fakes.ts && find .build/src -name '*.test.ts' -delete && ln -s ../node_modules .build/node_modules && (cd .build && rc-apps package) && mkdir -p dist && cp .build/dist/*.zip dist/",
+		"deploy": "npm run package && cd .build && (rc-apps deploy --url $RC_URL --username $RC_USER --password $RC_PASS --update || rc-apps deploy --url $RC_URL --username $RC_USER --password $RC_PASS)",
+		"changeset": "changeset",
+		"version": "changeset version && node scripts/sync-app-version.mjs && prettier --write CHANGELOG.md package.json app.json"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^3.0.3",
+		"@rocket.chat/apps-cli": "^1.14.0",
+		"@rocket.chat/apps-engine": "1.58.0",
+		"@rocket.chat/lint-config": "^0.1.0",
+		"@rocket.chat/message-parser": "^0.33.0",
+		"@rocket.chat/ui-kit": "^0.38.0",
+		"@types/node": "^22.0.0",
+		"oxlint": "~1.89.0",
+		"oxlint-tsgolint": "~7.0.2000",
+		"prettier": "^3.10.1",
+		"tsx": "^4.19.0",
+		"typescript": "^5.6.0"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ricardogarim/review-assigner.git"
+	},
+	"author": "ricardogarim"
+}

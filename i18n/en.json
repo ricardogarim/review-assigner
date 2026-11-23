@@ -1,0 +1,19 @@
+{
+	"review_description": "Request a code review",
+	"review_params": "<pr number | repo#number | PR URL> [@user ...]",
+	"setting_github_token": "GitHub token (read-only)",
+	"setting_repositories": "Repositories (one owner/repo per line; the first is the default)",
+	"setting_target_room": "Room for the cards",
+	"setting_webhook_token": "Webhook URL token",
+	"setting_webhook_active": "Webhook active",
+	"setting_user_links": "User links",
+	"setting_user_links_description": "One pair per line: rocketchat-username github-login. Linked people are mentioned on cards and can use Take it for their teams.",
+	"setting_not_available": "Not available",
+	"setting_not_available_description": "One GitHub login per line, optionally followed by \"until YYYY-MM-DD\". These people are not drawn. Lines with a past date stop counting by themselves.",
+	"setting_group_teams": "One person can cover several teams",
+	"setting_group_teams_description": "On: someone in several of the PR's teams can cover all of them, so fewer people are pinged. Off: each team gets its own reviewer when it has someone else to pick.",
+	"setting_draw_strategy": "Draw strategy",
+	"setting_draw_strategy_description": "Balanced: fewest open reviews first, then whoever covers more teams, then not recently picked, then random. Pure random: any eligible team member.",
+	"strategy_balanced": "Balanced (fewest open reviews first)",
+	"strategy_random": "Pure random"
+}

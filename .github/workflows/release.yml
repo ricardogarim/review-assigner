@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+concurrency: release
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Version or release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Open or update the "Version packages" pull request
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: npm run version
+          title: 'chore: version packages'
+          commit: 'chore: version packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release the app zip for a new version
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            echo "v$VERSION already released"
+            exit 0
+          fi
+          npm run package
+          node scripts/release-notes.mjs "$VERSION" > notes.md
+          gh release create "v$VERSION" "dist/review-assigner_$VERSION.zip" --title "v$VERSION" --notes-file notes.md

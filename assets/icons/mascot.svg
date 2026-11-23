@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0" result="g"/>
+      <feComponentTransfer in="g" result="g2"><feFuncA type="linear" slope=".45"/></feComponentTransfer>
+      <feComposite in="g2" in2="SourceGraphic" operator="in" result="gi"/>
+      <feBlend in="SourceGraphic" in2="gi" mode="multiply"/>
+    </filter>
+    <path id="blob" d="M50 17c13-1 26 6 31 19 5 12 2 27-8 36-9 9-24 12-37 7C24 74 16 62 17 48c1-15 15-30 33-31z"/>
+  </defs>
+  <g filter="url(#grain)">
+    <rect width="100" height="100" fill="#1F2329"/>
+    <use href="#blob" fill="#7A1630" transform="translate(4 3)"/>
+    <use href="#blob" fill="#F5455C"/>
+    <g fill="#fff">
+      <rect x="45" y="32" width="7.5" height="17" rx="3.75" transform="rotate(-20 48.75 40.5)"/>
+      <rect x="60" y="30" width="7.5" height="17" rx="3.75" transform="rotate(-20 63.75 38.5)"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"target": "es2022",
+		"module": "preserve",
+		"moduleResolution": "bundler",
+		"lib": ["es2020"],
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"noEmit": true,
+		"types": ["node"]
+	},
+	"include": ["ReviewAssignerApp.ts", "src/**/*.ts"]
+}

@@ -1,0 +1,18 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"extends": ["./node_modules/@rocket.chat/lint-config/oxlint.json"],
+	"options": {
+		"typeAware": true,
+		"reportUnusedDisableDirectives": "error"
+	},
+	"ignorePatterns": ["dist/**", ".build/**", ".superpowers/**", "scripts/**", ".github/**"],
+	"overrides": [
+		{
+			"files": ["**/*.test.ts"],
+			"rules": {
+				"typescript/prefer-optional-chain": "off",
+				"typescript/no-misused-promises": "off"
+			}
+		}
+	]
+}
