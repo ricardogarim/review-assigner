@@ -1,5 +1,16 @@
 # review-assigner
 
+## 0.2.0
+
+### Minor Changes
+
+- a2c08eb: Take it asks which teams to take, with your own teams preselected and any team on the card allowed, and the card shows one line per team
+- a2c08eb: `/review workload` lists who has open reviews, on which PRs, and for how long
+
+### Patch Changes
+
+- a2c08eb: One reviewer per CODEOWNERS team instead of per CODEOWNERS line, and a warning when the app cannot read a team's members
+
 ## 0.1.1
 
 ### Patch Changes
