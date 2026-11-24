@@ -54,6 +54,16 @@ export async function replyInThread(record: PrRecord, text: string, modify: IMod
 	await modify.getCreator().finish(builder);
 }
 
+export async function postInRoom(room: IRoom, text: string, modify: IModify, read: IRead): Promise<void> {
+	const builder = modify
+		.getCreator()
+		.startMessage()
+		.setRoom(room)
+		.setSender(await appUser(read))
+		.setText(text);
+	await modify.getCreator().finish(builder);
+}
+
 export async function tellUser(user: IUser, room: IRoom, text: string, modify: IModify, read: IRead): Promise<void> {
 	const notifier = modify.getNotifier();
 	const message = notifier

@@ -9,9 +9,11 @@ A Rocket.Chat App that picks code reviewers. `/review <pr>` reads the PR's CODEO
 /review Rocket.Chat.Electron#3604
 /review https://github.com/RocketChat/Rocket.Chat/pull/1234 @alice
 /review workload
+/review ooo alice until 2026-12-01
+/review link @alice AliceGh
 ```
 
-On the card, **Take it** lets you pick the teams you will review for (yours come preselected), and **Reassign** replaces or removes a reviewer, or draws again. `/review workload` shows who has open reviews, and on which PRs. Admins set everything else in the app settings.
+On the card, **Take it** lets you pick the teams you will review for (yours come preselected), and **Reassign** replaces or removes a reviewer, or draws again. `/review workload` shows who has open reviews, and on which PRs. In the settings room, `/review ooo` and `/review link` change who is out of office and who is linked to which GitHub login, without admin access. Admins set everything else in the app settings.
 
 ## Requirements
 

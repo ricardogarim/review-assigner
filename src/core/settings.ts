@@ -91,6 +91,15 @@ export const SETTINGS: ISetting[] = [
 		i18nLabel: 'setting_user_links',
 		i18nDescription: 'setting_user_links_description',
 	},
+	{
+		id: 'settings_room',
+		type: SettingType.ROOM_PICK,
+		packageValue: '',
+		required: false,
+		public: false,
+		i18nLabel: 'setting_settings_room',
+		i18nDescription: 'setting_settings_room_description',
+	},
 ];
 
 export function notAvailable(text: string, today: string): string[] {
@@ -105,6 +114,7 @@ export type Settings = {
 	token: string;
 	repos: string[];
 	roomId: string;
+	settingsRoomId: string;
 	webhookToken: string;
 	webhookActive: boolean;
 	notAvailable: string[];
@@ -115,15 +125,19 @@ export type Settings = {
 export async function settings(read: IRead): Promise<Settings> {
 	const reader = read.getEnvironmentReader().getSettings();
 	const value = (id: string) => reader.getValueById(id);
-	const room = await value('target_room');
-	const first = Array.isArray(room) ? room[0] : room;
+	const roomId = async (id: string): Promise<string> => {
+		const room = await value(id);
+		const first: unknown = Array.isArray(room) ? room[0] : room;
+		return (typeof first === 'string' ? first : (first as { _id?: string } | undefined)?._id) ?? '';
+	};
 	const repos = String((await value('repositories')) ?? '')
 		.split(/[\s,]+/)
 		.filter(Boolean);
 	return {
 		token: (await value('github_token')) ?? '',
 		repos: repos.length ? repos : ['RocketChat/Rocket.Chat'],
-		roomId: (typeof first === 'string' ? first : first?._id) ?? '',
+		roomId: await roomId('target_room'),
+		settingsRoomId: await roomId('settings_room'),
 		webhookToken: (await value('webhook_token')) ?? '',
 		webhookActive: Boolean(await value('webhook_active')),
 		notAvailable: notAvailable(String((await value('not_available')) ?? ''), new Date().toISOString().slice(0, 10)),
