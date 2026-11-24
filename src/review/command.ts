@@ -7,6 +7,7 @@ import { drawFor } from './assign';
 import type { Drawn } from './assign';
 import { parseCodeowners, slotsFor } from './codeowners';
 import { parsePrRef } from './pr-ref';
+import { workloadText } from './workload';
 import { nameOf, prCode, prLabel, slotLabel, teamsLabel } from '../card/labels';
 import { postOrUpdateCard, replyInThread, tellUser } from '../core/chat';
 import { settings } from '../core/settings';
@@ -14,16 +15,17 @@ import { Store } from '../core/store';
 import type { PrRecord, Reviewer } from '../core/types';
 import { GitHub } from '../github/client';
 
-const USAGE = 'Usage: `/review <pr number, repo#number or PR URL> [@user ...]`';
+const USAGE = 'Usage: `/review <pr number, repo#number or PR URL> [@user ...]` or `/review workload`';
 
 const withTeams = (reviewer: Reviewer): string => `${nameOf(reviewer)}${reviewer.teams?.length ? ` (${teamsLabel(reviewer.teams)})` : ''}`;
 
-function confirmation({ reviewers, unfilled }: Drawn): string {
+function confirmation({ reviewers, unfilled, unreadable = [] }: Drawn): string {
 	const unlinked = reviewers.filter((r) => !r.rcUsername);
 	return [
 		`Requested: ${reviewers.map(withTeams).join(', ')}`,
 		unlinked.length ? `Not linked: ${unlinked.map(nameOf).join(', ')}` : '',
 		unfilled.length ? `No reviewer for: ${unfilled.map(slotLabel).join(', ')}` : '',
+		unreadable.length ? `Cannot read the members of ${unreadable.join(', ')}. Check that the GitHub token can see these teams.` : '',
 	]
 		.filter(Boolean)
 		.join('\n');
@@ -48,6 +50,9 @@ export class ReviewCommand implements ISlashCommand {
 
 		try {
 			const s = await settings(read);
+			if (first?.toLowerCase() === 'workload') {
+				return await say(workloadText(await store.listOpenPrs(), s.notAvailable, Date.now()));
+			}
 			const ref = parsePrRef(first, s.repos);
 			if (!ref) {
 				return await say(USAGE);
@@ -120,6 +125,7 @@ export class ReviewCommand implements ISlashCommand {
 				reviewers: drawn.reviewers,
 				unfilledSlots: drawn.unfilled,
 				requestedBy: sender.id,
+				requestedAt: Date.now(),
 				roomId: s.roomId,
 				cardMessageId: '',
 			};

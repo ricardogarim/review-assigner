@@ -1,6 +1,6 @@
 {
-	"review_description": "Request a code review",
-	"review_params": "<pr number | repo#number | PR URL> [@user ...]",
+	"review_description": "Request a code review, or see who has open reviews",
+	"review_params": "<pr number | repo#number | PR URL> [@user ...] | workload",
 	"setting_github_token": "GitHub token",
 	"setting_github_token_description": "A read-only token. A classic token with read:org works for public repositories; private ones also need repository read access. If the org uses SSO, authorize the token for it.",
 	"setting_repositories": "Repositories",

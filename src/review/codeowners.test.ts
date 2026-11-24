@@ -31,12 +31,12 @@ test('dir/* matches direct children only', () => {
 	assert.deepEqual(teams(['packages/README.md']), [['architecture']]);
 });
 
-test('one slot per matched line, deduplicated', () => {
-	assert.deepEqual(teams(['apps/meteor/client/a.tsx', 'apps/meteor/client/views/b.tsx']), [['frontend']]);
-});
-
-test('several owners on a line are one slot', () => {
-	assert.deepEqual(teams(['packages/rest-typings/src/a.ts']), [['architecture', 'backend']]);
+test('one slot per team, however many lines name it', () => {
+	assert.deepEqual(teams(['packages/rest-typings/src/a.ts', 'apps/meteor/server/b.ts', 'apps/meteor/client/c.tsx']), [
+		['architecture'],
+		['backend'],
+		['frontend'],
+	]);
 });
 
 test('unowned files give no slot', () => {

@@ -78,6 +78,15 @@ test('Reassign submitted by someone not allowed changes nothing', async () => {
 	assert.match(env.told[0].text, /Only the author, the requester or a current reviewer can reassign/);
 });
 
+const takeSubmit = (userId: string, teams: string[]) =>
+	({
+		getInteractionData: () => ({
+			user: users.find((u) => u.id === userId),
+			view: { id: 'take:RocketChat/Rocket.Chat#1', state: { teams: { teams } } },
+		}),
+		getInteractionResponder: () => responder,
+	}) as unknown as UIKitViewSubmitInteractionContext;
+
 test('the author cannot take their own PR', async () => {
 	const env = await setup({ backend: ['author-gh'] });
 	await onBlockAction(env.app, click('take', 'au'), env.read, env.http, env.persis, env.modify);
@@ -87,7 +96,7 @@ test('the author cannot take their own PR', async () => {
 
 test('Take it matches any team of the original slot and names the person replaced', async () => {
 	const env = await setup({ architecture: ['arch'], backend: ['alice'] });
-	await onBlockAction(env.app, click('take', 'a1'), env.read, env.http, env.persis, env.modify);
+	await onViewSubmit(env.app, takeSubmit('a1', ['architecture/backend']), env.read, env.http, env.persis, env.modify);
 	const reviewers = (await env.store.getPr('RocketChat/Rocket.Chat', 1))?.reviewers ?? [];
 	assert.deepEqual(
 		reviewers.map((r) => r.rcUsername),
@@ -122,10 +131,53 @@ const reviewer = (login: string, id: string, slots: Slot[], teams: string[]) => 
 	status: 'pending' as const,
 });
 
-test('Take it covers every row whose team you are in', async () => {
+test('Take it asks which teams, offers every team on the card and preselects yours', async () => {
+	const pr = record({ reviewers: [reviewer('alice', 'k1', [be], ['backend']), reviewer('bob', 'd1', [fe], ['frontend'])] });
+	const env = await setup({ backend: ['alice'], frontend: ['bob', 'arch'] }, pr);
+	const opened = (await onBlockAction(env.app, click('take', 'a1'), env.read, env.http, env.persis, env.modify)) as {
+		view?: { blocks: { element: { initialValue: string[]; options: { value: string }[] } }[] };
+	};
+	assert.deepEqual(
+		opened.view?.blocks[0].element.options.map((o) => o.value),
+		['backend', 'frontend'],
+	);
+	assert.deepEqual(opened.view?.blocks[0].element.initialValue, ['frontend']);
+	assert.equal((await env.store.getPr('RocketChat/Rocket.Chat', 1))?.reviewers.length, 2);
+
+	await onViewSubmit(env.app, takeSubmit('a1', ['frontend']), env.read, env.http, env.persis, env.modify);
+	const updated = await env.store.getPr('RocketChat/Rocket.Chat', 1);
+	assert.deepEqual(
+		updated?.reviewers.map((r) => [r.rcUsername, r.teams]),
+		[
+			['alice', ['backend']],
+			['arch', ['frontend']],
+		],
+	);
+	assert.equal(env.thread[0], '@arch took frontend (from @bob)');
+});
+
+test('Take it can take a team you are not in, and an empty pick joins as an extra reviewer', async () => {
+	const env = await setup({ backend: ['alice'] });
+	await onViewSubmit(env.app, takeSubmit('x1', ['architecture/backend']), env.read, env.http, env.persis, env.modify);
+	assert.deepEqual(
+		(await env.store.getPr('RocketChat/Rocket.Chat', 1))?.reviewers.map((r) => [r.rcUsername, r.teams]),
+		[['stranger', ['architecture', 'backend']]],
+	);
+
+	await onViewSubmit(env.app, takeSubmit('d1', []), env.read, env.http, env.persis, env.modify);
+	assert.deepEqual(
+		(await env.store.getPr('RocketChat/Rocket.Chat', 1))?.reviewers.map((r) => [r.rcUsername, r.teams]),
+		[
+			['stranger', ['architecture', 'backend']],
+			['bob', undefined],
+		],
+	);
+});
+
+test('Take it with every team picked covers every row whose team you are in', async () => {
 	const pr = record({ reviewers: [reviewer('alice', 'k1', [be], ['backend']), reviewer('bob', 'd1', [fe], ['frontend'])] });
 	const env = await setup({ backend: ['alice', 'arch'], frontend: ['bob', 'arch'] }, pr);
-	await onBlockAction(env.app, click('take', 'a1'), env.read, env.http, env.persis, env.modify);
+	await onViewSubmit(env.app, takeSubmit('a1', ['backend', 'frontend']), env.read, env.http, env.persis, env.modify);
 	const updated = await env.store.getPr('RocketChat/Rocket.Chat', 1);
 	assert.deepEqual(
 		updated?.reviewers.map((r) => [r.rcUsername, r.teams]),
@@ -137,7 +189,7 @@ test('Take it covers every row whose team you are in', async () => {
 test('Take it leaves the old reviewer the rows you cannot cover', async () => {
 	const pr = record({ reviewers: [reviewer('alice', 'k1', [be, fe], ['backend', 'frontend'])] });
 	const env = await setup({ backend: ['alice'], frontend: ['alice', 'arch'] }, pr);
-	await onBlockAction(env.app, click('take', 'a1'), env.read, env.http, env.persis, env.modify);
+	await onViewSubmit(env.app, takeSubmit('a1', ['frontend']), env.read, env.http, env.persis, env.modify);
 	const updated = await env.store.getPr('RocketChat/Rocket.Chat', 1);
 	assert.deepEqual(
 		updated?.reviewers.map((r) => [r.rcUsername, r.slots?.map((x) => x.pattern), r.teams]),
@@ -152,7 +204,7 @@ test('Take it leaves the old reviewer the rows you cannot cover', async () => {
 test('Take it fills a row that had no reviewer', async () => {
 	const pr = record({ reviewers: [reviewer('alice', 'k1', [be], ['backend'])], unfilledSlots: [fe] });
 	const env = await setup({ backend: ['alice'], frontend: ['arch'] }, pr);
-	await onBlockAction(env.app, click('take', 'a1'), env.read, env.http, env.persis, env.modify);
+	await onViewSubmit(env.app, takeSubmit('a1', ['frontend']), env.read, env.http, env.persis, env.modify);
 	const updated = await env.store.getPr('RocketChat/Rocket.Chat', 1);
 	assert.deepEqual(updated?.unfilledSlots, []);
 	assert.deepEqual(
