@@ -11,7 +11,7 @@ export function fakeEnv(
 	options: {
 		users?: User[];
 		settings?: Record<string, unknown>;
-		teams?: Record<string, string[]>;
+		teams?: Record<string, string[] | null>;
 		pulls?: Record<number, object>;
 		messages?: string[];
 	} = {},
@@ -105,6 +105,9 @@ export function fakeEnv(
 				return options.pulls?.[Number(pull)] ? { statusCode: 200, data: options.pulls[Number(pull)] } : { statusCode: 404 };
 			}
 			const team = url.match(/\/teams\/([^/]+)\/members/)?.[1];
+			if (team && options.teams?.[team] === null) {
+				return { statusCode: 404 };
+			}
 			const logins = team ? (options.teams?.[team] ?? []) : [];
 			return { statusCode: 200, data: logins.map((member) => ({ login: member })) };
 		},

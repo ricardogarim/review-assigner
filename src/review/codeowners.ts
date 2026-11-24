@@ -49,11 +49,13 @@ export function slotsFor(rules: Rule[], files: string[]): Slot[] {
 	const slots = new Map<string, Slot>();
 	for (const file of files) {
 		const owner = [...rules].reverse().find((rule) => matches(rule.pattern, file));
-		if (!owner || slots.has(owner.pattern)) {
+		if (!owner) {
 			continue;
 		}
-		if (owner.owners.length) {
-			slots.set(owner.pattern, { pattern: owner.pattern, teams: owner.owners.map(teamOf) });
+		for (const team of owner.owners.map(teamOf)) {
+			if (!slots.has(team)) {
+				slots.set(team, { pattern: owner.pattern, teams: [team] });
+			}
 		}
 	}
 	return [...slots.values()];

@@ -20,7 +20,7 @@ async function run(args: string[]) {
 }
 
 test('/review without a PR answers with one usage line', async () => {
-	const usage = 'Usage: `/review <pr number, repo#number or PR URL> [@user ...]`';
+	const usage = 'Usage: `/review <pr number, repo#number or PR URL> [@user ...]` or `/review workload`';
 	assert.deepEqual(await run([]), [usage]);
 	assert.deepEqual(await run(['help']), [usage]);
 });

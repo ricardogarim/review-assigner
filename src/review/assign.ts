@@ -22,7 +22,6 @@ export async function teamMembers(gh: GitHub, slots: Slot[], logger: ILogger): P
 				throw error;
 			}
 			logger.warn(`Cannot read members of ${team}: ${error.message}`);
-			members[team] = [];
 		}
 	}
 	return members;
@@ -38,7 +37,7 @@ async function reviewersFromPicks(store: Store, picks: Pick[], members: TeamMemb
 	);
 }
 
-export type Drawn = { reviewers: Reviewer[]; unfilled: Slot[] };
+export type Drawn = { reviewers: Reviewer[]; unfilled: Slot[]; unreadable?: string[] };
 
 export async function drawFor(store: Store, gh: GitHub, s: Settings, slots: Slot[], exclude: string[], logger: ILogger): Promise<Drawn> {
 	const members = await teamMembers(gh, slots, logger);
@@ -61,5 +60,6 @@ export async function drawFor(store: Store, gh: GitHub, s: Settings, slots: Slot
 			await store.pushLastPicked(slot.teams[0], pick.login);
 		}
 	}
-	return { reviewers: await reviewersFromPicks(store, result.picks, members), unfilled: result.unfilled };
+	const unreadable = unique(slots.flatMap((slot) => slot.teams)).filter((team) => !members[team]);
+	return { reviewers: await reviewersFromPicks(store, result.picks, members), unfilled: result.unfilled, unreadable };
 }

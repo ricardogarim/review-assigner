@@ -11,7 +11,7 @@ import type { CardContext } from './context';
 import { canReassign, REASSIGN_REFUSED } from './permissions';
 import { MODAL_PREFIX, reassignModal, reassignTarget, submitReassign } from './reassign';
 import type { ReassignState } from './reassign';
-import { take } from './take';
+import { take, TAKE_PREFIX, takeModal } from './take';
 import { tellUser } from '../core/chat';
 import { Store } from '../core/store';
 
@@ -37,7 +37,11 @@ export async function onBlockAction(
 	};
 
 	if (data.actionId === ACTION_TAKE) {
-		await say(await take(ctx, record, data.user));
+		const result = await take(ctx, record, data.user);
+		if (typeof result === 'object') {
+			return responder.openModalViewResponse(takeModal(record, result.choose, result.preselected, app.getID()) as never);
+		}
+		await say(result);
 	}
 	if (data.actionId === ACTION_REASSIGN) {
 		if (await canReassign(record, data.user, ctx.store)) {
@@ -58,23 +62,38 @@ export async function onViewSubmit(
 ): Promise<IUIKitResponse> {
 	const data = context.getInteractionData();
 	const responder = context.getInteractionResponder();
-	if (!data.view.id.startsWith(MODAL_PREFIX)) {
+	const prefix = [MODAL_PREFIX, TAKE_PREFIX].find((p) => data.view.id.startsWith(p));
+	if (!prefix) {
 		return responder.successResponse();
 	}
 	const ctx: CardContext = { app, read, http, modify, store: new Store(read, persis) };
-	const ref = data.view.id.slice(MODAL_PREFIX.length);
+	const ref = data.view.id.slice(prefix.length);
 	const hash = ref.lastIndexOf('#');
 	const record = await ctx.store.getPr(ref.slice(0, hash), Number(ref.slice(hash + 1)));
+	if (record?.state !== 'open') {
+		return responder.successResponse();
+	}
+	const tell = async (text: string | undefined) => {
+		const room = text && (await read.getRoomReader().getById(record.roomId));
+		if (text && room) {
+			await tellUser(data.user, room, text, modify, read);
+		}
+	};
+
+	if (prefix === TAKE_PREFIX) {
+		const chosen = (data.view.state as { teams?: { teams?: string[] } } | undefined)?.teams?.teams ?? [];
+		const result = await take(ctx, record, data.user, chosen);
+		await tell(typeof result === 'string' ? result : undefined);
+		return responder.successResponse();
+	}
+
 	const state = (data.view.state ?? {}) as ReassignState;
-	const target = record && reassignTarget(record, state);
-	if (record?.state !== 'open' || !target) {
+	const target = reassignTarget(record, state);
+	if (!target) {
 		return responder.successResponse();
 	}
 	if (!(await canReassign(record, data.user, ctx.store))) {
-		const room = await read.getRoomReader().getById(record.roomId);
-		if (room) {
-			await tellUser(data.user, room, REASSIGN_REFUSED, modify, read);
-		}
+		await tell(REASSIGN_REFUSED);
 		return responder.successResponse();
 	}
 	const errors = await submitReassign(ctx, record, target, state, data.user);

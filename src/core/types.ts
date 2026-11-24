@@ -28,6 +28,7 @@ export type PrRecord = {
 	reviewers: Reviewer[];
 	unfilledSlots: Slot[];
 	requestedBy: string;
+	requestedAt?: number;
 	roomId: string;
 	cardMessageId: string;
 };

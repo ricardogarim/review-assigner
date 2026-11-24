@@ -131,6 +131,11 @@ test('team lines are sorted by team name, named reviewers last', () => {
 	assert.equal(row(sorted, 1), '`architecture` @alice\n\n`backend` no reviewer\n\n`frontend` bob-gh\n\nOther reviewers: @named');
 });
 
+test('a reviewer who covers two teams shows on both team lines', () => {
+	const card = record({ reviewers: [{ ...alice, teams: ['architecture', 'backend'] }, bob] });
+	assert.equal(row(card, 1), '`architecture` @alice\n\n`backend` @alice\n\n`frontend` bob-gh');
+});
+
 test('a team with several empty CODEOWNERS lines shows one line', () => {
 	const omni = (pattern: string) => ({ pattern, teams: ['omnichannel'] });
 	const card = record({ reviewers: [alice], unfilledSlots: [omni('/a'), omni('/b'), omni('/c')] });

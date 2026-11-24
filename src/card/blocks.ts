@@ -22,7 +22,7 @@ export function buildCard(record: PrRecord, appId: string, showRepo = false): Ca
 	const head = `*[${ref} ${record.title}](${record.url})*\nby ${author} · +${count(record.additions)} −${count(record.deletions)}${state}`;
 
 	const teamLines = [
-		...record.reviewers.flatMap((r) => (r.teams?.length ? [{ label: teamsLabel(r.teams), text: `${nameOf(r)}${STATUS[r.status]}` }] : [])),
+		...record.reviewers.flatMap((r) => (r.teams ?? []).map((team) => ({ label: team, text: `${nameOf(r)}${STATUS[r.status]}` }))),
 		...record.unfilledSlots.map((slot) => ({ label: teamsLabel(slot.teams), text: 'no reviewer' })),
 	].sort((a, b) => a.label.localeCompare(b.label));
 	const others = record.reviewers.filter((r) => !r.teams?.length).map((r) => `${nameOf(r)}${STATUS[r.status]}`);
