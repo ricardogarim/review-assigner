@@ -1,5 +1,11 @@
 # review-assigner
 
+## 0.3.0
+
+### Minor Changes
+
+- 44402b5: Add a settings room where people change Out of office and the user links with `/review ooo` and `/review link`, without admin access
+
 ## 0.2.0
 
 ### Minor Changes
