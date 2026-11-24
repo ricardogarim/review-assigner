@@ -31,6 +31,10 @@ With **One reviewer can cover several teams** on, a person who fills one slot al
 
 `/review workload` answers only the person who runs it. It lists everyone with open reviews, busiest first, with each PR, its review status and how many days ago it was requested. People in **Out of office** are marked. It counts the same open reviews as the draw, so review requests made only on GitHub are not in it.
 
+## Settings room
+
+`/review ooo` and `/review link` edit the **Out of office** and **Rocket.Chat and GitHub users** setting values, so the settings page stays the one source. They work only in the **Settings room**: a person who can post there may change them. Lists answer only the person who asks; changes are posted in the room.
+
 ## Card
 
 ```

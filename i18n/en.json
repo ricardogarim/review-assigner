@@ -1,6 +1,6 @@
 {
 	"review_description": "Request a code review, or see who has open reviews",
-	"review_params": "<pr number | repo#number | PR URL> [@user ...] | workload",
+	"review_params": "<pr number | repo#number | PR URL> [@user ...] | workload | ooo | link | help",
 	"setting_github_token": "GitHub token",
 	"setting_github_token_description": "A read-only token. A classic token with read:org works for public repositories; private ones also need repository read access. If the org uses SSO, authorize the token for it.",
 	"setting_repositories": "Repositories",
@@ -15,6 +15,8 @@
 	"setting_user_links_description": "One pair per line: rocketchat-username github-login. Linked people are mentioned on the cards and can use Take it. Others show as their GitHub login.",
 	"setting_not_available": "Out of office",
 	"setting_not_available_description": "People to skip when reviewers are drawn, for example during time off. One GitHub login per line. Add \"until YYYY-MM-DD\" to skip someone only until that day. You can still name them with /review or Reassign.",
+	"setting_settings_room": "Settings room",
+	"setting_settings_room_description": "People in this room can change Out of office and Rocket.Chat and GitHub users with /review ooo and /review link, without admin access. Leave empty to allow changes only here.",
 	"setting_group_teams": "One reviewer can cover several teams",
 	"setting_group_teams_description": "On: a person in more than one of the PR's teams covers all of them, so fewer people get pinged. Off: each team gets its own reviewer when someone else is available.",
 	"setting_draw_strategy": "How reviewers are picked",

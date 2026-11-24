@@ -13,8 +13,22 @@ An admin sets everything in **Administration → Apps → Review Assigner → Se
 | **How reviewers are picked**             | _Balanced_ (default): fewest open reviews, then whoever covers more teams, then not recently picked, then random. _Random_: anyone in the team.                                                                                              |
 | **One reviewer can cover several teams** | On (default): a person in more than one of the PR's teams covers all of them. Off: each team gets its own reviewer when someone else is available.                                                                                           |
 | **Rocket.Chat and GitHub users**         | One `rocketchat-username github-login` pair per line. Linked people are mentioned on cards and can use Take it. Others show as their GitHub login. Unknown usernames are logged when you save.                                               |
+| **Settings room**                        | Optional. People in this room can change **Out of office** and **Rocket.Chat and GitHub users** with slash commands. See below.                                                                                                              |
 
 The PR author, deactivated users and people in **Out of office** are never drawn.
+
+## Settings room
+
+Run these commands in the **Settings room**. They change the same values as the settings page, so an admin still sees and edits them there. A change is posted in the room with the name of the person who made it. Elsewhere the commands are refused.
+
+| Command                                                  | What it does                                                                    |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `/review ooo`                                            | Lists **Out of office**.                                                        |
+| `/review ooo <github-login or @user> [until YYYY-MM-DD]` | Adds the person, or changes their date. `@user` uses their linked GitHub login. |
+| `/review ooo remove <github-login or @user>`             | Removes the person.                                                             |
+| `/review link`                                           | Lists **Rocket.Chat and GitHub users**.                                         |
+| `/review link @user <github-login>`                      | Links the user. It replaces an older line for the same user or the same login.  |
+| `/review link remove <@user or github-login>`            | Removes the link.                                                               |
 
 ## GitHub webhook
 

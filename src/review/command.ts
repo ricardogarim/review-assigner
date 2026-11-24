@@ -6,16 +6,18 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { drawFor } from './assign';
 import type { Drawn } from './assign';
 import { parseCodeowners, slotsFor } from './codeowners';
+import { PEOPLE_USAGE, peopleCommand } from './people';
 import { parsePrRef } from './pr-ref';
 import { workloadText } from './workload';
 import { nameOf, prCode, prLabel, slotLabel, teamsLabel } from '../card/labels';
-import { postOrUpdateCard, replyInThread, tellUser } from '../core/chat';
+import { postInRoom, postOrUpdateCard, replyInThread, tellUser } from '../core/chat';
 import { settings } from '../core/settings';
 import { Store } from '../core/store';
 import type { PrRecord, Reviewer } from '../core/types';
 import { GitHub } from '../github/client';
 
-const USAGE = 'Usage: `/review <pr number, repo#number or PR URL> [@user ...]` or `/review workload`';
+const USAGE =
+	'Usage: `/review <pr number, repo#number or PR URL> [@user ...]` or `/review workload`. In the settings room: `/review ooo` and `/review link`.';
 
 const withTeams = (reviewer: Reviewer): string => `${nameOf(reviewer)}${reviewer.teams?.length ? ` (${teamsLabel(reviewer.teams)})` : ''}`;
 
@@ -46,12 +48,23 @@ export class ReviewCommand implements ISlashCommand {
 		const sender = context.getSender();
 		const say = (text: string) => tellUser(sender, context.getRoom(), text, modify, read);
 		const [first, ...rest] = context.getArguments();
+		const sub = first?.toLowerCase() ?? '';
 		const store = new Store(read, persis);
 
 		try {
 			const s = await settings(read);
-			if (first?.toLowerCase() === 'workload') {
+			if (sub === 'workload') {
 				return await say(workloadText(await store.listOpenPrs(), s.notAvailable, Date.now()));
+			}
+			if (sub === 'ooo' || sub === 'link') {
+				if (!s.settingsRoomId || context.getRoom().id !== s.settingsRoomId) {
+					return await say('Use this command in the settings room. An admin picks it in the app settings.');
+				}
+				const { text, changed } = await peopleCommand(this.app, [sub, ...rest], read);
+				return changed ? await postInRoom(context.getRoom(), `@${sender.username}: ${text}`, modify, read) : await say(text);
+			}
+			if (sub === 'help') {
+				return await say(`${USAGE}\n${PEOPLE_USAGE}`);
 			}
 			const ref = parsePrRef(first, s.repos);
 			if (!ref) {
